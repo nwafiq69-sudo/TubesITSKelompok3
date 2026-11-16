@@ -1,145 +1,190 @@
-# Praktikum Guided — Modul 9 & 10
+# Praktikum Guided — Gamified ITS
 ## Student Performance: REST API dan Web App
 
-# Praktikum Guided — Modul 9 & 10
-## Student Performance: REST API dan Web App
-
-Starter project ini menyiapkan kode inti untuk praktikum 100 menit dengan metode guided.
-Mahasiswa mempelajari alur, menjalankan aplikasi, menguji endpoint, dan menelusuri data dari
-form sampai response API.
+Proyek ini merupakan aplikasi **Intelligent Tutoring System (ITS)** edukatif berbasis web. Aplikasi menerima hasil kuis, menentukan status belajar, memperkirakan engagement, lalu memberikan XP, badge, rekomendasi level adaptif, dan umpan balik. Prediksi status menggunakan model machine learning, sedangkan ketuntasan akhir ditentukan oleh aturan KKM.
 
 ## 1. Struktur folder
 
 ```text
-student-ml-web-guided/
-├── app.py
+TubesITSKelompok3/
+├── app/
+│   ├── engine.py          # Validasi, prediksi, aturan status dan gamifikasi
+│   ├── gamify.py          # Rank XP dan streak
+│   ├── main.py            # REST API FastAPI dan penyajian frontend
+│   ├── questions.py       # Bank soal untuk 5 level
+│   ├── schemas.py         # Validasi request dengan Pydantic
+│   ├── service.py         # Alur kuis, pemain, streak, XP dan badge
+│   └── store.py           # Penyimpanan SQLite
+├── data/
+│   └── dataset_gamified_its_1000.csv
+├── docs/screenshots/      # Tangkapan layar antarmuka
+├── models/                # Model machine learning (.joblib)
+├── static/
+│   ├── index.html         # Struktur halaman web
+│   ├── style.css          # Tampilan dan layout responsif
+│   └── app.js             # Interaksi frontend dan Fetch API
+├── tests/                 # Pengujian engine, layanan, dan API
+├── train_model.py         # Melatih dan mengekspor model
 ├── requirements.txt
-├── README.md
-├── model/
-│   └── student_pass_pipeline.joblib  <-- salin dari hasil Modul 8
-└── static/
-    ├── index.html
-    ├── style.css
-    └── app.js
+└── README.md
 ```
 
-## 2. Persiapan model
+## 2. Model dan dataset
 
-Salin `student_pass_pipeline.joblib` hasil Modul 8 ke folder `model/`.
-File model tidak disertakan karena harus berasal dari pipeline yang benar-benar dibuat
-dan dievaluasi pada praktikum sebelumnya. Pastikan nama file dan 12 fitur cocok.
+File model sudah tersedia di folder `models/`, termasuk model klasifikasi utama dan model estimasi engagement. Dataset `data/dataset_gamified_its_1000.csv` berisi 1.000 catatan performa dari 200 mahasiswa unik. Database SQLite dibuat otomatis saat aplikasi dijalankan dan diisi dengan data awal untuk leaderboard.
 
-## 3. Membuat environment
+Pelatihan ulang model bersifat opsional. Jalankan perintah berikut jika ingin melatih ulang model menggunakan dependensi di environment aktif:
+
+```bash
+python train_model.py
+```
+
+## 3. Persiapan environment
+
+Pastikan Python dan pip sudah tersedia.
 
 ### Windows PowerShell
+
 ```powershell
-py -3.12 -m venv .venv
+py -m venv .venv
 .venv\Scripts\Activate.ps1
 ```
 
 ### Linux/macOS
+
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-## 4. Instal dependency dan jalankan
+## 4. Instalasi dan menjalankan aplikasi
+
+Jalankan dari direktori proyek:
 
 ```bash
 python -m pip install --upgrade pip
-cd student-ml-web-guided
 pip install -r requirements.txt
-pip install scikit-learn==1.6.1
+uvicorn app.main:app --reload
 ```
 
-Buka:
-- Web app: http://127.0.0.1:8000/
-- Health check: http://127.0.0.1:8000/health
-- Swagger UI: http://127.0.0.1:8000/docs
+Buka alamat berikut di browser:
+
+- Web app: <http://127.0.0.1:8000/>
+- Health check: <http://127.0.0.1:8000/health>
+- Swagger UI: <http://127.0.0.1:8000/docs>
+
+Untuk menghentikan server, tekan `Ctrl+C` pada terminal.
 
 ## 5. Contoh payload untuk Swagger
 
+Pilih `POST /api/process`, klik **Try it out**, lalu masukkan JSON berikut:
+
 ```json
 {
-  "age": 17,
-  "studytime": 3,
-  "failures": 0,
-  "schoolsup": "yes",
-  "famsup": "yes",
-  "activities": "yes",
-  "higher": "yes",
-  "internet": "yes",
-  "famrel": 4,
-  "freetime": 3,
-  "goout": 2,
-  "absences": 4
+  "question_count": 12,
+  "answered_questions": 12,
+  "correct_answers": 11,
+  "duration_seconds": 540,
+  "hint_count": 0,
+  "attempt_count": 1,
+  "streak_days": 3,
+  "game_level": 3,
+  "feedback_frequency": 3
 }
 ```
 
+Response memuat ringkasan skor dan akurasi, status dari aturan, estimasi remedial model, estimasi engagement, XP, badge, level baru, dan pesan umpan balik.
+
 ## 6. Kontrak API
 
-| Method | Endpoint | Fungsi | Response umum |
-|---|---|---|---|
-| GET | `/health` | Memeriksa layanan | `{"status":"ok"}` |
-| POST | `/predict` | Prediksi dari 12 fitur | `class_id`, `prediction`, `probability_tuntas`, `disclaimer` |
+| Method | Endpoint | Fungsi |
+|---|---|---|
+| GET | `/health` | Memeriksa status layanan, model, jumlah soal, dan pemain. |
+| GET | `/api/meta` | Mengambil informasi level, badge, rank, dataset, dan evaluasi model. |
+| POST | `/api/process` | Memproses metrik kuis; opsional memperbarui profil jika diberi `player_id`. |
+| POST | `/api/players` | Membuat pemain atau mengambil profil berdasarkan nama. |
+| GET | `/api/players/{id}` | Mengambil profil pemain beserta riwayat kuis. |
+| GET | `/api/quiz/{level}?player_id={id}` | Mengambil 10 soal acak untuk level yang sudah terbuka. |
+| POST | `/api/quiz/check` | Memeriksa satu jawaban dan mengembalikan umpan balik serta penjelasan. |
+| POST | `/api/quiz/submit` | Menilai jawaban kuis dan memperbarui XP, badge, streak, profil, dan level. |
+| GET | `/api/leaderboard` | Mengambil leaderboard; mendukung parameter `limit` dan `player_id`. |
 
-Validasi numerik: `age` 15–22; `studytime` 1–4; `failures` 0–4;
-`famrel`, `freetime`, `goout` 1–5; `absences` 0–93.
-Field kategori: `schoolsup`, `famsup`, `activities`, `higher`, `internet` bernilai `yes` atau `no`.
+### Contoh membuat atau mengambil pemain
+
+```json
+{
+  "name": "Budi Santoso"
+}
+```
+
+Kirim ke `POST /api/players`. Gunakan `id` dari response sebagai `player_id` untuk mengambil soal dan mengirim hasil kuis.
+
+### Validasi input utama `/api/process`
+
+| Field | Aturan |
+|---|---|
+| `question_count` | Angka bulat dari 1 sampai 200. |
+| `answered_questions` | Angka bulat dari 0 sampai 200, tidak melebihi jumlah soal. |
+| `correct_answers` | Angka bulat dari 0 sampai 200, tidak melebihi jumlah yang dijawab. |
+| `duration_seconds` | Angka lebih besar dari 0 dan paling lama 86.400 detik. |
+| `hint_count` | Angka bulat dari 0 sampai 200. |
+| `attempt_count` | Angka bulat dari 1 sampai 100. |
+| `streak_days` | Angka bulat dari 0 sampai 3.650 hari. |
+| `game_level` | Angka bulat dari 1 sampai 5. |
+| `feedback_frequency` | Angka bulat dari 0 sampai 200. |
+| `player_id` | Opsional, maksimal 32 karakter. Jika diisi, profil ikut diperbarui. |
+
+Field yang salah eja atau field tambahan ditolak. Request yang tidak valid mengembalikan HTTP 422; pemain tidak ditemukan mengembalikan HTTP 404; level yang belum terbuka mengembalikan HTTP 403.
 
 ## 7. Alur kerja praktikum
 
-| 1| Menghubungkan pipeline Modul 8 dengan deployment |
-| 2| REST API, HTTP POST, JSON, FastAPI, Pydantic |
-| 3| Menjalankan server dan uji GET `/health` serta POST `/predict` melalui Swagger |
-| 4| Membaca response dan validasi input |
-| 5| Frontend vs backend; HTML form, CSS, JavaScript |
-| 6| Guided walkthrough: FormData → Number → JSON → Fetch API |
-| 7| Menjalankan web app dan uji end-to-end |
-| 8| Uji error sederhana dan lacak satu payload |
-| 9| Rangkuman dan responsible use |
+| Langkah | Materi/kegiatan |
+|---:|---|
+| 1 | Memahami struktur frontend, backend, model, dataset, dan database. |
+| 2 | Menjalankan server FastAPI dan membuka web app. |
+| 3 | Memeriksa `GET /health` dan dokumentasi Swagger. |
+| 4 | Mengirim JSON ke `POST /api/process` dan membaca response. |
+| 5 | Menelusuri validasi input menggunakan Pydantic. |
+| 6 | Membuat pemain, mengambil kuis, memeriksa jawaban, dan mengirim kuis. |
+| 7 | Mengamati perubahan skor, status, XP, badge, streak, level, profil, dan leaderboard. |
+| 8 | Menguji input typo, field yang hilang, nilai di luar batas, dan level terkunci. |
+| 9 | Menjelaskan alur formulir web → Fetch API → REST API → service → model/aturan → response → antarmuka. |
 
-## 8. Checklist demonstrasi mahasiswa
+## 8. Checklist demonstrasi
 
-1. Server berhasil berjalan.
-2. `GET /health` mengembalikan status `ok`.
-3. `POST /predict` berhasil pada Swagger.
-4. Input di luar rentang ditolak oleh validasi Pydantic.
-5. Form web mengirim data tanpa reload halaman.
-6. Hasil prediksi dan probabilitas tampil.
-7. Mahasiswa dapat menjelaskan alur input → JSON → API → model → response → UI.
+1. Server berjalan tanpa error dan halaman utama dapat dibuka.
+2. `GET /health` memberikan status `ok`.
+3. Payload valid berhasil diproses melalui Swagger.
+4. Input tidak valid ditolak dan menghasilkan pesan validasi.
+5. Pemain dapat dibuat atau diambil berdasarkan nama.
+6. Kuis hanya dapat diambil pada level yang telah terbuka.
+7. Jawaban kuis dinilai di sisi server.
+8. Hasil kuis memperbarui XP, badge, streak, profil, dan riwayat sesuai aturan.
+9. Mahasiswa dapat menjelaskan alur data dari form sampai response API.
 
-## 9. Catatan teknis penting
+## 9. Aturan status dan gamifikasi
 
-- Versi scikit-learn saat inference harus kompatibel dengan versi saat pipeline disimpan.
-  Jika muncul warning/error saat `joblib.load`, cocokkan versi library dari environment Modul 8.
-- Jangan memuat file Joblib/Pickle dari sumber yang tidak dipercaya.
-- Jika model tidak memiliki `predict_proba`, aplikasi tetap menampilkan kelas prediksi dan
-  menandai probabilitas sebagai tidak tersedia.
-- Bila frontend dan API disajikan oleh FastAPI pada origin lokal yang sama, konfigurasi CORS
-  tidak diperlukan untuk skenario ini.
-- Dataset Student Performance berasal dari dua sekolah di Portugal. Ini prototipe akademik,
-  bukan alat untuk memberi label, menghukum, atau menentukan kelulusan siswa nyata.
+- **Status belajar:** skor minimal 75 berarti **Tuntas**; skor di bawah 75 berarti **Perlu Remedial**.
+- **XP:** dasar skor adalah 20% dari skor; bonus 5 XP untuk akurasi minimal 85%, bonus 5 XP untuk penyelesaian 100%, bonus streak 2 XP per hari (maksimal 10 XP), dan penalti 1 XP per hint (maksimal 4 XP).
+- **Badge:** `Quiz Finisher`, `High Achiever` (skor ≥ 90), `Persistent Learner` (percobaan ≥ 2), `Learning Streak` (streak ≥ 3 hari), dan `Remedial Cleared` (lulus setelah remedial di level yang sama).
+- **Level adaptif:** naik jika engagement ≥ 75 dan akurasi ≥ 85; turun jika status remedial dan engagement < 65; selain itu level dipertahankan. Level dibatasi dari 1 sampai 5.
+- **Rank XP:** Pemula (0), Penjelajah (50), Pejuang (150), Ahli (300), dan Legenda (600).
 
-Kode app.py adalah implementasi **FastAPI** (sebuah framework web Python) untuk membuat API yang mengintegrasikan model Machine Learning. Fungsinya adalah menerima data siswa dari pengguna (seperti dari browser atau aplikasi lain), memprosesnya menggunakan model, dan mengembalikan hasil prediksi apakah siswa tersebut akan "Tuntas" atau "Belum Tuntas" secara akademik.
+## 10. Pengujian
 
-# 1. Persiapan File dan Pemuatan Model
-Kode diawali dengan `BASE_DIR` untuk menentukan direktori saat ini dan mencari file model `student_pass_pipeline.joblib`. Jika file tidak ditemukan, program akan langsung terhenti (`raise FileNotFoundError`).
-Model kemudian dimuat menggunakan `joblib.load(MODEL_PATH)`. Pemuatan ini diletakkan di luar fungsi API agar model hanya dipanggil satu kali saat server pertama kali menyala, bukan diulang-ulang setiap kali ada pengguna yang meminta prediksi. Ini membuat server jauh lebih cepat dan hemat memori.
+Jalankan pengujian yang tersedia dengan perintah:
 
-# 2. Inisialisasi Server dan File Statis
-Objek `app = FastAPI(...)` dibuat sebagai pondasi server. Kemudian, `app.mount("/static", ...)` digunakan agar server FastAPI juga bisa bertindak sebagai web server tradisional yang menyajikan file aset frontend (seperti CSS, JavaScript, atau gambar) yang disimpan di dalam folder `static`.
+```bash
+python -m unittest discover tests -v
+```
 
-# 3. Validasi Data Input dengan Pydantic
-Kelas `StudentInput(BaseModel)` bertindak sebagai "penjaga gerbang" yang memastikan data yang dikirim (payload) bentuknya valid sebelum masuk ke model machine learning.
+Pengujian mencakup validasi engine, aturan XP dan badge, alur layanan pemain/kuis, serta endpoint API. Untuk pengujian API, dependency `httpx` disertakan di `requirements.txt`.
 
-* `Field(ge=15, le=22)`: Memastikan angka berada dalam batas tertentu (misalnya, *age* harus *greater or equal* 15 dan *less or equal* 22).
-* `Literal["yes", "no"]`: Memastikan input teks hanya berisi kata "yes" atau "no", mencegah error tipografi.
-Jika pengguna mengirim data yang tidak sesuai (misal: usia 50), FastAPI akan otomatis memblokirnya dan mengirimkan pesan error kepada pengguna tanpa merusak server.
+## 11. Catatan teknis dan batasan
 
-# 4. Rute (Endpoint) API
-Terdapat tiga rute utama yang bisa diakses:
-
-* `@app.get("/")`: Rute utama untuk menampilkan antarmuka web. Saat pengguna membuka alamat server, ini akan menyajikan halaman `index.html`.
-* `@app.get("/health")`: Endpoint sederhana untuk memastikan server berjalan dengan baik (biasanya digunakan oleh sistem *monitoring*).
-* `@app.post("/predict")`: Ini adalah "otak" dari API. Menerima data JSON (yang sudah divalidasi oleh `StudentInput`), lalu diubah menjadi format tabel `pandas.DataFrame` dengan perintah `model_dump()`. Data tersebut kemudian diprediksi oleh model (`model.predict`). Jika model mendukung probabilitas perhitungan (seperti *Logistic Regression*), persentasenya ikut diambil (`model.predict_proba`). Hasil akhirnya dikemas ulang menjadi JSON yang memuat keputusan, persentase tuntas, dan *disclaimer* untuk dikembalikan ke pengguna.
+- `learning_status` pada dataset merupakan turunan skor dengan batas 75. Status akhir karena itu ditentukan oleh aturan; model menjadi pendukung estimasi remedial.
+- `engagement_score` pada dataset dapat diestimasi dari skor, kelengkapan, streak, hint, dan frekuensi umpan balik. Membuka penjelasan soal dapat menambah engagement.
+- Durasi pada data pelatihan sekitar 50 detik per soal; waktu pengerjaan pengguna dapat berbeda, sehingga probabilitas model perlu ditafsirkan sebagai estimasi.
+- Jika model gagal dimuat, latih ulang model dengan `python train_model.py` pada environment proyek.
+- Aplikasi ini adalah prototipe edukatif untuk praktikum. Prediksi dan rekomendasi merupakan pendukung belajar, bukan dasar keputusan akademik formal.
+akademik nyata (Academic Disclaimer tampil di halaman web).
