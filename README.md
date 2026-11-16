@@ -18,7 +18,7 @@ TubesITSKelompok3/
 ├── data/
 │   └── dataset_gamified_its_1000.csv
 ├── docs/screenshots/      # Tangkapan layar antarmuka
-├── models/                # Model machine learning (.joblib)
+├── models/                # Model ITS (.joblib)
 ├── static/
 │   ├── index.html         # Struktur halaman web
 │   ├── style.css          # Tampilan dan layout responsif
