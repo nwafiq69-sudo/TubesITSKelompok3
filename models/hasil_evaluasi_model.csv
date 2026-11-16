@@ -1,0 +1,4 @@
+,Accuracy,Precision,Recall,F1,CV acc (latih)
+Baseline (kelas mayoritas),0.555,,,,
+KNN,0.945,0.964,0.91,0.936,0.908
+MLP,1.0,1.0,1.0,1.0,0.992

@@ -1,0 +1,4 @@
+data/its.db
+__pycache__/
+*.pyc
+.venv/

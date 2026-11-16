@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gamified ITS - Adaptive Level &amp; Engagement Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="layout-wrapper logged-out">
+    <!-- ================= SIDEBAR / DRAWER SAMPING ================= -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo" aria-hidden="true">
+          <img src="/static/assets/robot-tutor.png" alt="" width="48" height="48">
+        </div>
+        <div class="brand-info">
+          <h2>Gamified ITS</h2>
+          <p>Adaptive Engine</p>
+        </div>
+        <button type="button" class="sidebar-close-btn" id="btn-close-sidebar" aria-label="Tutup menu">✕</button>
+        <button type="button" class="sidebar-collapse-btn" id="btn-collapse-sidebar" aria-label="Kecilkan menu" title="Kecilkan menu"><span data-icon="panel"></span></button>
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Menu Utama">
+        <button type="button" class="nav-item active" data-tab="dashboard">
+          <span class="nav-icon" data-icon="dashboard"></span>
+          <span class="nav-text">Dashboard</span>
+        </button>
+        <button type="button" class="nav-item" data-tab="quiz">
+          <span class="nav-icon" data-icon="quiz"></span>
+          <span class="nav-text">Kuis Interaktif</span>
+        </button>
+        <button type="button" class="nav-item" data-tab="history">
+          <span class="nav-icon" data-icon="history"></span>
+          <span class="nav-text">Hasil Kuis</span>
+        </button>
+        <button type="button" class="nav-item" data-tab="badges">
+          <span class="nav-icon" data-icon="badge"></span>
+          <span class="nav-text">XP &amp; Badges</span>
+        </button>
+        <button type="button" class="nav-item" data-tab="streak">
+          <span class="nav-icon" data-icon="streak"></span>
+          <span class="nav-text">Learning Streak</span>
+        </button>
+        <button type="button" class="nav-item" data-tab="dynamic-level">
+          <span class="nav-icon" data-icon="levels"></span>
+          <span class="nav-text">Dynamic Level</span>
+        </button>
+        <button type="button" class="nav-item" data-tab="recommendation">
+          <span class="nav-icon" data-icon="target"></span>
+          <span class="nav-text">Rekomendasi</span>
+        </button>
+        <button type="button" class="nav-item" data-tab="leaderboard">
+          <span class="nav-icon" data-icon="trophy"></span>
+          <span class="nav-text">Leaderboard</span>
+        </button>
+        <button type="button" class="nav-item" data-tab="evaluasi-ml">
+          <span class="nav-icon" data-icon="brain"></span>
+          <span class="nav-text">Evaluasi ML</span>
+        </button>
+        <button type="button" class="nav-item" data-tab="dataset-riiid">
+          <span class="nav-icon" data-icon="database"></span>
+          <span class="nav-text">Dataset Riiid</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-card" id="user-profile-card">
+          <div class="user-avatar" id="side-avatar">N</div>
+          <div class="user-info">
+            <strong class="user-name" id="side-user-name">Nadia Putri Rahmawati</strong>
+            <span class="user-role" id="side-user-role">Mahasiswa</span>
+          </div>
+          <button type="button" class="btn-logout" id="btn-side-logout" title="Ganti pemain / Keluar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span>Keluar</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <!-- ================= MAIN CONTENT AREA ================= -->
+    <div class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button type="button" class="menu-toggle-btn" id="btn-toggle-sidebar" aria-label="Buka Menu">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <div class="breadcrumb">
+            <span class="breadcrumb-root">Gamified ITS</span>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-current" id="breadcrumb-current">Mulai Belajar</span>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <span class="univ-tag">S1 Sistem Informasi · Universitas Bengkulu</span>
+          <div class="topbar-status-chip">
+            <span class="status-dot"></span>
+            <span id="topbar-engine-model">KNN &amp; JST Active</span>
+          </div>
+        </div>
+      </header>
+
+      <main class="page-container">
+        <!-- ================= LOGIN VIEW ================= -->
+        <section id="view-login" class="login-wrapper">
+          <div class="welcome-panel">
+            <div class="welcome-copy">
+              <span class="welcome-eyebrow">GAMIFIED INTELLIGENT TUTOR SYSTEM</span>
+              <h1>Mulai belajar.<br><span>Naik level</span> dengan caramu.</h1>
+              <p>Jawab kuis, kumpulkan XP, dan ikuti rekomendasi belajar yang menyesuaikan kemampuanmu.</p>
+              <div class="welcome-steps" aria-label="Alur belajar">
+                <span>01 <strong>Pilih pemain</strong></span>
+                <span>02 <strong>Kerjakan kuis</strong></span>
+                <span>03 <strong>Raih progres</strong></span>
+              </div>
+              <div class="welcome-art" aria-hidden="true">
+                <div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div>
+                <img class="welcome-robot" src="/static/assets/robot-tutor.png" alt="" width="220" height="220">
+                <div class="art-chip art-chip-xp">✦ XP bertambah</div>
+                <div class="art-chip art-chip-level">⚡ Level adaptif</div>
+                <div class="art-chip art-chip-streak">🔥 Streak belajar</div>
+              </div>
+            </div>
+            <div class="login-card">
+              <div class="login-card-icon" aria-hidden="true">✦</div>
+              <span class="login-kicker">SIAP BELAJAR?</span>
+              <h2>Selamat datang! 👋</h2>
+              <p class="login-subtext">Masukkan nama panggilanmu untuk membuka dashboard belajar.</p>
+              <div class="form-group">
+                <label for="input-name" class="form-label">Nama panggilan</label>
+                <input id="input-name" class="form-control" type="text" maxlength="40" placeholder="Contoh: Budi" autocomplete="name">
+              </div>
+              <button type="button" id="btn-login" class="btn btn-primary btn-block btn-lg">
+                <span>Mulai Belajar</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </button>
+              <div class="demo-players" aria-label="Pilih pemain contoh">
+                <span class="demo-players-label">Lanjutkan sebagai pemain contoh</span>
+                <button type="button" class="demo-player" data-player-name="Arif Anggraini"><span class="demo-avatar">A</span>Arif Anggraini</button>
+                <button type="button" class="demo-player" data-player-name="Naufal Lestari"><span class="demo-avatar">N</span>Naufal Lestari</button>
+                <button type="button" class="demo-player" data-player-name="Dimas Wijaya"><span class="demo-avatar">D</span>Dimas Wijaya</button>
+              </div>
+              <p class="login-hint">Nama baru mulai dari Level 1. Pilih salah satu pemain contoh di atas untuk melihat progresnya.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= MAIN APP VIEWS ================= -->
+        <div id="view-app" hidden>
+          <!-- 1. DASHBOARD TAB -->
+          <section id="tab-dashboard" class="tab-panel">
+            <div class="hero-banner">
+              <div class="hero-top-row">
+                <div class="hero-meta-badge" id="hero-subinfo">Level 1 · Dasar Pemrograman &amp; Arsitektur ITS</div>
+                <span class="hero-eyebrow">Belajar sedikit, maju setiap hari</span>
+              </div>
+
+              <div class="hero-greeting">
+                <h1>Hai, <span id="hero-name">Nadia Putri Rahmawati</span>!</h1>
+                <p>Siap lanjut belajar hari ini?</p>
+                <div class="hero-status-row">
+                  <span class="badge-status-pembelajar">Status: <strong id="hero-status-text">Mandiri</strong></span>
+                  <span class="badge-status-models">KNN: <span id="hero-knn-status">Mandiri</span> · JST: <span id="hero-jst-status">Mandiri</span></span>
+                </div>
+              </div>
+              <img class="hero-robot" src="/static/assets/robot-tutor.png" alt="Maskot robot tutor membawa buku dan ide" width="190" height="190">
+
+              <div class="hero-metrics-strip">
+                <div class="hero-metric-item">
+                  <span class="hero-metric-icon" data-icon="levels"></span>
+                  <span class="metric-label">Total XP</span>
+                  <span class="metric-val" id="dash-xp">0</span>
+                  <span class="metric-unit">Poin</span>
+                </div>
+                <div class="hero-metric-item">
+                  <span class="hero-metric-icon" data-icon="badge"></span>
+                  <span class="metric-label">Badges</span>
+                  <span class="metric-val" id="dash-badges">0 / 5</span>
+                  <span class="metric-unit">Diraih</span>
+                </div>
+                <div class="hero-metric-item streak-item">
+                  <span class="hero-metric-icon" data-icon="streak"></span>
+                  <span class="metric-label">Learning Streak</span>
+                  <span class="metric-val streak-val">
+                    <span id="dash-streak">0 Hari</span>
+                  </span>
+                  <span class="metric-unit">Berturut-turut</span>
+                </div>
+                <div class="hero-level-progress-item">
+                  <img class="streak-mini-mascot" src="/static/assets/streak-bear.png" alt="" width="72" height="72">
+                  <div class="hero-progress-content">
+                    <div class="progress-label-row">
+                      <span>Perjalanan level <strong id="dash-level-caption">Level 1 terbuka</strong></span>
+                      <strong id="dash-level-percent">20%</strong>
+                    </div>
+                    <div class="hero-progress-bar">
+                      <div class="hero-progress-fill" id="dash-level-bar" style="width: 20%;"></div>
+                    </div>
+                    <small>Terus kerjakan kuis untuk membuka level berikutnya.</small>
+                  </div>
+                </div>
+              </div>
+              <div class="hero-action-buttons">
+                <button type="button" class="btn-hero-quiz" id="btn-hero-quiz"><span data-icon="quiz"></span> Kerjakan Kuis</button>
+                <button type="button" class="btn-hero-reco" id="btn-hero-reco">Lihat Rekomendasi <span data-icon="arrow"></span></button>
+              </div>
+            </div>
+
+            <!-- STATISTIK PERFORMA PEMBELAJARAN (5 KPI CARDS) -->
+            <div class="section-title-row">
+              <h3>Statistik Performa Pembelajaran</h3>
+              <span class="pill-indicator pill-mandiri" id="dash-perf-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <span id="dash-perf-badge-text">Mandiri</span>
+              </span>
+            </div>
+
+            <div class="kpi-grid">
+              <div class="kpi-card">
+                <div class="kpi-card-header">
+                  <span class="kpi-label">Rata-rata Nilai</span>
+                  <span class="kpi-icon kpi-icon-blue">📈</span>
+                </div>
+                <div class="kpi-value" id="kpi-avg-score">0.0</div>
+                <div class="kpi-subtext">Skala 0 – 100</div>
+              </div>
+
+              <div class="kpi-card">
+                <div class="kpi-card-header">
+                  <span class="kpi-label">Nilai Kuis Terakhir</span>
+                  <span class="kpi-icon kpi-icon-purple">🎗️</span>
+                </div>
+                <div class="kpi-value" id="kpi-last-score">0.0</div>
+                <div class="kpi-subtext" id="kpi-delta-text">Belum ada perbandingan</div>
+              </div>
+
+              <div class="kpi-card">
+                <div class="kpi-card-header">
+                  <span class="kpi-label">Kuis Diselesaikan</span>
+                  <span class="kpi-icon kpi-icon-dark">📚</span>
+                </div>
+                <div class="kpi-value" id="kpi-quiz-count">0</div>
+                <div class="kpi-subtext" id="kpi-unique-modules">0 level pernah dicoba</div>
+              </div>
+
+              <div class="kpi-card">
+                <div class="kpi-card-header">
+                  <span class="kpi-label">Akurasi Jawaban</span>
+                  <span class="kpi-icon kpi-icon-green">🎯</span>
+                </div>
+                <div class="kpi-value" id="kpi-accuracy">0.0%</div>
+                <div class="kpi-subtext">Ketepatan rata-rata</div>
+              </div>
+
+              <div class="kpi-card">
+                <div class="kpi-card-header">
+                  <span class="kpi-label">Rata-rata Waktu</span>
+                  <span class="kpi-icon kpi-icon-clock">⏱️</span>
+                </div>
+                <div class="kpi-value" id="kpi-avg-time">—</div>
+                <div class="kpi-subtext">Detik per kuis</div>
+              </div>
+            </div>
+
+            <!-- ANALYTICS CHARTS SECTION -->
+            <div class="charts-grid">
+              <div class="chart-card">
+                <div class="chart-card-header">
+                  <div>
+                    <h4>Perkembangan Nilai Kuis</h4>
+                    <p class="chart-sub">Tren skor per attempt dan persentase akurasi jawaban</p>
+                  </div>
+                  <span class="chart-tag">Real-time</span>
+                </div>
+                <div class="chart-container" id="chart-scores-container">
+                  <div class="chart-visual" id="chart-scores-bars"></div>
+                </div>
+              </div>
+
+              <div class="chart-card">
+                <div class="chart-card-header">
+                  <div>
+                    <h4>Akumulasi Experience Points (XP)</h4>
+                    <p class="chart-sub">Pertumbuhan XP dari penyelesaian kuis, bonus nilai, dan konsistensi</p>
+                  </div>
+                  <span class="chart-tag">Gamifikasi</span>
+                </div>
+                <div class="chart-container" id="chart-xp-container">
+                  <div class="chart-visual" id="chart-xp-bars"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- LEVEL QUEST & BADGES PREVIEW -->
+            <div class="dash-extra-grid">
+              <div class="card">
+                <div class="card-header-flex">
+                  <h4>Quest Line Level Adaptif</h4>
+                  <span class="pill pill-primary" id="dash-rank-name">Pemula</span>
+                </div>
+                <p class="card-sub">Level terbuka otomatis saat performa dan keterlibatan belajar tinggi.</p>
+                <ol class="quest" id="dash-quest-line"></ol>
+              </div>
+
+              <div class="card">
+                <div class="card-header-flex">
+                  <h4>Koleksi Badges &amp; Pencapaian</h4>
+                  <button type="button" class="btn-text-link" data-goto="badges">Lihat Semua →</button>
+                </div>
+                <div class="badges-compact-grid" id="dash-badge-preview"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 2. KUIS INTERAKTIF TAB (Matching Image 2) -->
+          <section id="tab-quiz" class="tab-panel" hidden>
+            <!-- LEVEL SELECTOR -->
+            <div id="quiz-select" class="card quiz-select-card">
+              <div class="select-header">
+                <h3>Jelajahi Materi &amp; Kuis</h3>
+                <p class="muted" id="quiz-reco-text">Kuis berisi 10 soal dengan durasi otomatis. Selesaikan kuis untuk meningkatkan akurasi, XP, dan status adaptifmu.</p>
+              </div>
+              <div class="level-grid" id="level-grid"></div>
+            </div>
+
+            <!-- QUIZ PLAY INTERACTIVE (2-COLUMN MATCHING IMAGE 2) -->
+            <div id="quiz-play" class="quiz-play-layout" hidden>
+              <!-- LEFT COLUMN: QUESTION CARD -->
+              <div class="question-main-card">
+                <div class="q-header-row">
+                  <div class="q-number-pill" id="quiz-q-num">Soal 1 / 10</div>
+                  <div class="q-topic-badge" id="quiz-q-topic">Topik: Arsitektur ITS</div>
+                </div>
+
+                <div class="q-prompt-box">
+                  <div id="quiz-question" class="q-prompt-text"></div>
+                </div>
+
+                <!-- 4 OPTIONS (A, B, C, D) -->
+                <div class="options-container" id="quiz-options"></div>
+
+                <!-- HINT & FEEDBACK PANEL -->
+                <div class="quiz-interactive-actions">
+                  <button type="button" id="btn-hint" class="btn btn-ghost btn-sm">
+                    <span>💡 Pakai hint (-XP)</span>
+                  </button>
+                  <span class="hint-display" id="hint-text"></span>
+                </div>
+
+                <div id="quiz-feedback" class="feedback-panel" hidden>
+                  <div id="fb-verdict" class="fb-verdict"></div>
+                  <div id="fb-explain" class="fb-explain" hidden></div>
+                  <div class="fb-actions">
+                    <button type="button" id="btn-explain" class="btn btn-ghost btn-sm">📖 Lihat penjelasan</button>
+                  </div>
+                </div>
+
+                <!-- PREV & NEXT NAVIGATION BUTTONS -->
+                <div class="q-bottom-nav">
+                  <button type="button" id="btn-quiz-prev" class="btn btn-secondary">
+                    ← Sebelumnya
+                  </button>
+                  <button type="button" id="btn-quiz-next" class="btn btn-primary">
+                    Berikutnya →
+                  </button>
+                </div>
+              </div>
+
+              <!-- RIGHT COLUMN: QUESTION NAVIGATION CARD (CARD SOAL DISAMPING) -->
+              <div class="question-nav-card">
+                <div class="nav-card-head">
+                  <h4>Navigasi Nomor Soal</h4>
+                  <div class="nav-timer-pill">
+                    <span class="timer-icon">⏱️</span>
+                    <span class="timer-digits" id="quiz-timer">00:00</span>
+                  </div>
+                </div>
+
+                <!-- 10 QUESTIONS GRID (5x2) -->
+                <div class="question-nav-grid" id="quiz-nav-grid">
+                  <!-- Generated dynamically: buttons 1 to 10 -->
+                </div>
+
+                <!-- LEGEND MATCHING IMAGE 2 -->
+                <div class="nav-legend">
+                  <div class="legend-item">
+                    <span class="legend-dot dot-active"></span>
+                    <span>Soal aktif saat ini</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-dot dot-answered"></span>
+                    <span>Sudah dijawab</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-dot dot-unanswered"></span>
+                    <span>Belum dijawab</span>
+                  </div>
+                </div>
+
+                <div class="nav-stats-summary">
+                  <span>Progres Jawaban:</span>
+                  <strong id="nav-answered-ratio">0 / 10</strong>
+                </div>
+
+                <!-- SUBMIT BUTTON -->
+                <button type="button" id="btn-quiz-submit" class="btn btn-submit-quiz">
+                  Selesaikan &amp; Kirim Kuis
+                </button>
+              </div>
+            </div>
+
+            <!-- RESULT CARD -->
+            <div id="quiz-result" class="card result-card" hidden></div>
+          </section>
+
+          <!-- 3. HASIL KUIS TAB -->
+          <section id="tab-history" class="tab-panel" hidden>
+            <div class="card">
+              <div class="card-header-flex">
+                <div>
+                  <h3>Riwayat &amp; Evaluasi Kuis</h3>
+                  <p class="muted">Catatan lengkap seluruh modul kuis yang telah kamu kerjakan.</p>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table class="table modern-table">
+                  <thead>
+                    <tr>
+                      <th>Waktu</th>
+                      <th>Level Materi</th>
+                      <th>Skor</th>
+                      <th>Status Rule</th>
+                      <th>XP Didapat</th>
+                    </tr>
+                  </thead>
+                  <tbody id="history-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- 4. XP & BADGES TAB -->
+          <section id="tab-badges" class="tab-panel" hidden>
+            <div class="card">
+              <div class="card-header-flex">
+                <div>
+                  <h3>Tingkatan Rank &amp; Akumulasi XP</h3>
+                  <p class="muted">Peroleh XP dari setiap penyelesaian kuis, akurasi tinggi, dan streak belajar.</p>
+                </div>
+                <span class="pill pill-primary" id="tab-rank-pill">Pemula</span>
+              </div>
+              <div class="bar-wrap">
+                <div class="bar-fill" id="tab-rank-bar"></div>
+              </div>
+              <p class="muted small" id="tab-rank-text">-</p>
+            </div>
+
+            <div class="card">
+              <h3>Daftar Pencapaian (Badges)</h3>
+              <p class="muted">Buka seluruh lencana dengan konsistensi belajar dan penguasaan materi kuis.</p>
+              <div class="badges" id="tab-badge-grid"></div>
+            </div>
+          </section>
+
+          <!-- 5. LEARNING STREAK TAB -->
+          <section id="tab-streak" class="tab-panel" hidden>
+            <div class="streak-hero-card">
+              <div class="streak-flame-showcase">
+                <img class="streak-mascot" src="/static/assets/streak-bear.png" alt="Maskot beruang ungu dengan aura api merah muda" width="180" height="180">
+                <div class="streak-hero-count">
+                  <h2 id="streak-tab-days">0 Hari</h2>
+                  <p id="streak-tab-caption">Belum ada streak</p>
+                </div>
+              </div>
+              <div class="streak-explanation">
+                <h4>Jaga ritme belajarmu</h4>
+                <ul>
+                  <li>Api streak bertambah <strong>+1 hari</strong> setiap kali kamu mengerjakan minimal 1 kuis di hari berikutnya.</li>
+                  <li>Bonus XP streak harian bertambah seiring panjangnya konsistensi belajarmu.</li>
+                  <li>Jika tidak ada aktivitas kuis dalam lebih dari 24 jam, api streak akan padam dan kembali ke 1.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3>Perjalanan Belajar Pekan Ini</h3>
+              <p class="muted">Penanda berikut menggambarkan panjang streak saat ini.</p>
+              <div class="streak-week-track" id="streak-week-track"></div>
+            </div>
+          </section>
+
+          <!-- 6. DYNAMIC LEVEL TAB -->
+          <section id="tab-dynamic-level" class="tab-panel" hidden>
+            <div class="card">
+              <h3>Mekanisme Penyesuaian Level Adaptif (Dynamic Level)</h3>
+              <p class="muted">Tingkat kesulitan modul belajar disesuaikan secara real-time oleh penalaran berbasis aturan (rule-based reasoning) dan estimasi machine learning.</p>
+              
+              <div class="dynamic-rules-grid">
+                <div class="rule-box rule-up">
+                  <div class="rule-icon">⬆️</div>
+                  <h4>Naik ke Level Berikutnya</h4>
+                  <p>Jika skor <strong>≥ 75</strong>, akurasi <strong>≥ 85%</strong>, dan engagement score <strong>≥ 75</strong>.</p>
+                </div>
+                <div class="rule-box rule-stay">
+                  <div class="rule-icon">🔄</div>
+                  <h4>Pertahankan Level Saat Ini</h4>
+                  <p>Jika skor memenuhi standar kelulusan atau sedang memantapkan pemahaman konsep.</p>
+                </div>
+                <div class="rule-box rule-down">
+                  <div class="rule-icon">📘</div>
+                  <h4>Penguatan Materi (Level Down)</h4>
+                  <p>Jika berstatus <strong>Perlu Remedial</strong> dan engagement score <strong>&lt; 65</strong> untuk memperkuat pondasi dasar.</p>
+                </div>
+              </div>
+
+              <h4 style="margin-top: 1.5rem;">Jalur Petualangan Level</h4>
+              <ol class="quest" id="tab-quest-line"></ol>
+            </div>
+          </section>
+
+          <!-- 7. REKOMENDASI TAB -->
+          <section id="tab-recommendation" class="tab-panel" hidden>
+            <div class="card">
+              <div class="card-header-flex">
+                <div>
+                  <h3>Rekomendasi Pembelajaran Adaptif</h3>
+                  <p class="muted">Analisis personal berbasis status belajar dan performa terkini.</p>
+                </div>
+                <span class="pill pill-mandiri" id="reco-status-pill">Mandiri</span>
+              </div>
+              
+              <div class="reco-highlight-box" id="reco-highlight-box">
+                <h4 id="reco-title">Lanjutkan ke Modul Pengayaan</h4>
+                <p id="reco-description">Performa belajarmu konsisten di atas KKM (92%). Disarankan memperdalam konsep arsitektur dan machine learning pada level 5.</p>
+              </div>
+
+              <div class="reco-steps-grid">
+                <div class="step-card">
+                  <span class="step-num">1</span>
+                  <h5>Kerjakan Kuis Level Target</h5>
+                  <p>Tingkatkan penguasaan soal-soal tingkat lanjut untuk mempertahankan gelar Master.</p>
+                </div>
+                <div class="step-card">
+                  <span class="step-num">2</span>
+                  <h5>Jaga Konsistensi Streak</h5>
+                  <p>Pertahankan minimal 1 kuis per hari untuk memaksimalkan akumulasi XP bonus.</p>
+                </div>
+                <div class="step-card">
+                  <span class="step-num">3</span>
+                  <h5>Eksplorasi Evaluasi Model</h5>
+                  <p>Pahami cara algoritma KNN dan JST mengklasifikasikan kebutuhan bimbingan siswa.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 8. LEADERBOARD TAB -->
+          <section id="tab-leaderboard" class="tab-panel" hidden>
+            <div class="card">
+              <div class="card-header-flex">
+                <div>
+                  <h3>Leaderboard Pembelajar</h3>
+                  <p class="muted" id="lb-info">Peringkat diurutkan berdasarkan total XP, lalu rata-rata skor.</p>
+                </div>
+                <button type="button" id="btn-refresh-lb" class="btn btn-ghost btn-sm">↻ Muat ulang</button>
+              </div>
+              <div class="leaderboard-podium" id="lb-podium" aria-label="Tiga peringkat teratas"></div>
+              <div class="leaderboard-list-title">Peringkat lainnya</div>
+              <div class="table-wrap leaderboard-table-wrap">
+                <table class="table modern-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 60px;">#</th>
+                      <th>Nama Mahasiswa</th>
+                      <th>Total XP</th>
+                      <th>Level</th>
+                      <th>Rata-rata Skor</th>
+                    </tr>
+                  </thead>
+                  <tbody id="lb-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- 9. EVALUASI ML TAB -->
+          <section id="tab-evaluasi-ml" class="tab-panel" hidden>
+            <div class="card">
+              <div class="card-header-flex">
+                <div>
+                  <h3>Evaluasi Model Machine Learning (KNN vs JST/MLP)</h3>
+                  <p class="muted">Perbandingan metrik performa klasifikasi status belajar pada dataset validasi.</p>
+                </div>
+                <span class="pill pill-primary">Hasil Pelatihan Model</span>
+              </div>
+              
+              <div class="table-wrap">
+                <table class="table modern-table">
+                  <thead>
+                    <tr>
+                      <th>Model Klasifikasi</th>
+                      <th>Accuracy</th>
+                      <th>Precision</th>
+                      <th>Recall</th>
+                      <th>F1-Score</th>
+                      <th>CV Acc (Latih)</th>
+                    </tr>
+                  </thead>
+                  <tbody id="ml-eval-body"></tbody>
+                </table>
+              </div>
+
+              <div class="ml-insight-cards">
+                <div class="insight-card">
+                  <h5>🤖 K-Nearest Neighbors (KNN)</h5>
+                  <p>Akurasi 94.5% dengan F1 0.936. Model mengklasifikasikan status berdasarkan kedekatan fitur dengan k siswa serupa dalam dataset.</p>
+                </div>
+                <div class="insight-card">
+                  <h5>🧠 Multi-Layer Perceptron (JST / MLP)</h5>
+                  <p>Akurasi 100% pada fitur kinerja. Menggunakan jaringan saraf tiruan feedforward dengan representasi non-linear untuk estimasi remedial.</p>
+                </div>
+                <div class="insight-card">
+                  <h5>⚖️ Pendekatan Hibrida (Rule + ML)</h5>
+                  <p>Untuk integritas akademik, keputusan ketuntasan didasarkan pada aturan transparan (KKM 75), sementara model ML memberikan peluang remedial dini.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 10. DATASET RIIID TAB -->
+          <section id="tab-dataset-riiid" class="tab-panel" hidden>
+            <div class="card">
+              <div class="card-header-flex">
+                <div>
+                  <h3>Karakteristik Dataset Gamified ITS &amp; Adaptasi Riiid</h3>
+                  <p class="muted">Dataset interaksi pembelajaran cerdas dengan 1000 catatan performa dari 200 mahasiswa unik.</p>
+                </div>
+                <span class="pill pill-dark">1000 Baris Data</span>
+              </div>
+
+              <div class="dataset-meta-grid">
+                <div class="dmeta-card">
+                  <span class="dmeta-label">Total Sampel Kuis</span>
+                  <strong>1,000 Observasi</strong>
+                </div>
+                <div class="dmeta-card">
+                  <span class="dmeta-label">Mahasiswa Terdaftar</span>
+                  <strong>200 Siswa Unik</strong>
+                </div>
+                <div class="dmeta-card">
+                  <span class="dmeta-label">Tingkat Kesulitan</span>
+                  <strong>Level 1 – 5</strong>
+                </div>
+                <div class="dmeta-card">
+                  <span class="dmeta-label">Batas Kelulusan (KKM)</span>
+                  <strong>Skor 75.0</strong>
+                </div>
+              </div>
+
+              <h4 style="margin-top: 1.5rem;">Fitur Pembelajaran yang Dianalisis</h4>
+              <div class="dataset-features-list" id="dataset-features-list"></div>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <footer class="footer">
+        <div class="footer-inner">
+          <p><strong>Academic Disclaimer:</strong> Sistem ini merupakan <em>prototipe Intelligent Tutoring System (ITS) edukatif</em> yang dikembangkan untuk keperluan praktikum akademik. Prediksi machine learning dan rekomendasi adaptif berfungsi sebagai pendukung belajar, bukan dasar mutlak keputusan kelulusan formal.</p>
+          <p class="muted small">Praktikum Intelligent Tutoring System · S1 Sistem Informasi · Universitas Bengkulu</p>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <dialog id="confirm-dialog" class="app-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-message">
+    <button type="button" class="dialog-close" id="confirm-close" aria-label="Tutup dialog">×</button>
+    <div class="dialog-icon" aria-hidden="true">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2.5 20h19L12 3Z"/><path d="M12 9v5m0 3h.01"/></svg>
+    </div>
+    <span class="dialog-kicker">KONFIRMASI KUIS</span>
+    <h2 id="confirm-title">Kirim kuis sekarang?</h2>
+    <p id="confirm-message"></p>
+    <div class="dialog-actions">
+      <button type="button" class="btn btn-secondary" id="confirm-cancel">Lanjut mengerjakan</button>
+      <button type="button" class="btn btn-primary" id="confirm-accept">Kirim kuis</button>
+    </div>
+  </dialog>
+  <script src="/static/app.js"></script>
+</body>
+</html>
