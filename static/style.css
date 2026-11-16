@@ -2743,3 +2743,90 @@ body { background: radial-gradient(circle at 86% 0, #e5dcff 0, transparent 32%),
   .welcome-art .art-orbit, .art-chip { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .welcome-robot, .streak-flame.lit svg { animation: none; } }
+
+/* Keep the dataset page readable on narrow phones (including 360px screens). */
+@media (max-width: 640px) {
+  .tab-panel,
+  .tab-panel > .card,
+  .dataset-meta-grid,
+  .dataset-features-list,
+  .dfeature-item {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  #tab-dataset-riiid .card-header-flex {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: .75rem;
+  }
+
+  .dataset-meta-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .65rem;
+  }
+
+  .dmeta-card {
+    padding: .8rem;
+  }
+
+  .dmeta-card strong {
+    font-size: .98rem;
+    overflow-wrap: anywhere;
+  }
+
+  .dataset-features-list {
+    grid-template-columns: minmax(0, 1fr);
+    gap: .6rem;
+  }
+
+  .dfeature-item {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: .45rem .65rem;
+    padding: .8rem;
+  }
+
+  .dfeature-code,
+  .dfeature-desc {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  #tab-dynamic-level .quest {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+    margin-top: 1rem;
+  }
+
+  #tab-dynamic-level .quest li {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    min-width: 0;
+    text-align: left;
+    line-height: 1.45;
+  }
+
+  #tab-dynamic-level .quest li::before,
+  #tab-dynamic-level .quest li:first-child::before {
+    display: block;
+    top: -1rem;
+    left: 21px;
+    width: 3px;
+    height: 1.4rem;
+  }
+
+  #tab-dynamic-level .quest li:first-child::before {
+    display: none;
+  }
+
+  #tab-dynamic-level .quest .node {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    margin: 0;
+  }
+}
